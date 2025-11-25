@@ -1,88 +1,95 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8" />
     <title>Book Viewer</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <style>
-        body {
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 50px;
-            background-color: #000000
+        html,body{
+            height:100%;
+            margin:0;
+            background:#000;
         }
-        img {
-            max-width: 90vw;
-            max-height: 85vh;
+        body{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            outline:none; /* allow focusing for key events without visible outline */
         }
-        .controls {
-            margin-top: 20px;
-            display: none;
+        img{
+            max-width:calc(100vw - 20px);
+            max-height:calc(100vh - 20px);
+            -webkit-user-drag:none;
+            user-select:none;
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 0 10px;
-        }
+        /* optional: hide cursor after a short delay for cleaner view */
+        body.idle *{ cursor:none; }
     </style>
 </head>
-<body>
-<img id="pageImage" src="" alt="Page">
+<body tabindex="0">
+    <img id="pageImage" src="" alt="Page scan">
 
-<div class="controls">
-    <button onclick="prevPage()">Previous</button>
-    <button onclick="nextPage()">Next</button>
-</div>
+    <script>
+        // List your image files (relative to this index.html)
+        const pages = [
+            "Assets/page-00.jpg",
+            "Assets/page-01.jpg",
+            "Assets/page-02.jpg",
+            "Assets/page-03.jpg",
+            "Assets/page-04.jpg",
+            "Assets/page-05.jpg",
+            "Assets/page-06.jpg",
+            "Assets/page-07.jpg",
+            "Assets/page-08.jpg",
+            "Assets/page-09.jpg",
+            "Assets/page-10.jpg"
+        ];
 
-<script>
-    // List of image filenames
-    const pages = [
-        "Assets/page_00.jpg",
-        "Assets/page_01.jpg",
-        "Assets/page_02.jpg",
-        "Assets/page_03.jpg",
-        "Assets/page_04.jpg",
-        "Assets/page_05.jpg",
-        "Assets/page_06.jpg",
-        "Assets/page_07.jpg",
-        "Assets/page_08.jpg",
-        "Assets/page_09.jpg",
-        "Assets/page_10.jpg"
-    ];
+        let current = 0;
+        const img = document.getElementById("pageImage");
 
-    let current = 0;
+        function showPage() {
+            img.src = pages[current];
+        }
 
-    function showPage() {
-        document.getElementById("pageImage").src = pages[current];
-    }
+        function prevPage() {
+            if (current > 0) {
+                current--;
+                showPage();
+            }
+        }
 
-    function prevPage() {
-        if (current > 0) {
-            current--;
+        function nextPage() {
+            if (current < pages.length - 1) {
+                current++;
+                showPage();
+            }
+        }
+
+        // keyboard navigation (left/right arrows)
+        document.body.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowLeft") {
+                prevPage();
+            } else if (e.key === "ArrowRight") {
+                nextPage();
+            }
+        });
+
+        // ensure the body has focus so key events work
+        window.addEventListener("load", () => {
             showPage();
-        }
-    }
-
-    function nextPage() {
-        if (current < pages.length - 1) {
-            current++;
-            showPage();
-        }
-    }
-
-    // Show the first page on load
-    showPage();
-
-    // Handle arrow key presses
-    document.addEventListener("keydown", function(event) {
-        if (event.key === "ArrowLeft") {
-            prevPage();
-        } else if (event.key === "ArrowRight") {
-            nextPage();
-        }
-    });
-</script>
-
+            document.body.focus();
+            // optional: hide cursor after inactivity for cleaner view
+            let t;
+            const idleClass = "idle";
+            const resetIdle = () => {
+                document.body.classList.remove(idleClass);
+                clearTimeout(t);
+                t = setTimeout(() => document.body.classList.add(idleClass), 1500);
+            };
+            document.addEventListener("mousemove", resetIdle, {passive:true});
+            resetIdle();
+        });
+    </script>
 </body>
 </html>
