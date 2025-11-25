@@ -9,21 +9,21 @@
             height:100%;
             margin:0;
             background:#000;
-            margin: 50px;
         }
         body{
             display:flex;
             align-items:center;
             justify-content:center;
-            outline:none; /* allow focusing for key events without visible outline */
+            outline:none;
         }
         img{
-            max-width:calc(100vw - 20px);
-            max-height:calc(100vh - 20px);
+            margin:50px;
+            box-sizing:border-box;
+            max-width:calc(100vw - 100px);
+            max-height:calc(100vh - 100px);
             -webkit-user-drag:none;
             user-select:none;
         }
-        /* optional: hide cursor after a short delay for cleaner view */
         body.idle *{ cursor:none; }
     </style>
 </head>
@@ -31,7 +31,6 @@
     <img id="pageImage" src="" alt="Page scan">
 
     <script>
-        // List your image files (relative to this index.html)
         const pages = [
             "Assets/page-00.jpg",
             "Assets/page-01.jpg",
@@ -67,7 +66,6 @@
             }
         }
 
-        // keyboard navigation (left/right arrows)
         document.body.addEventListener("keydown", (e) => {
             if (e.key === "ArrowLeft") {
                 prevPage();
@@ -76,11 +74,26 @@
             }
         });
 
-        // ensure the body has focus so key events work
+        function handlePointerNavigation(clientX) {
+            const half = window.innerWidth / 2;
+            if (clientX < half) prevPage();
+            else nextPage();
+        }
+
+        document.addEventListener("click", (e) => {
+            if (e.button !== 0) return;
+            handlePointerNavigation(e.clientX);
+        });
+
+        document.addEventListener("touchend", (e) => {
+            const t = e.changedTouches[0];
+            if (!t) return;
+            handlePointerNavigation(t.clientX);
+        }, {passive:true});
+
         window.addEventListener("load", () => {
             showPage();
             document.body.focus();
-            // optional: hide cursor after inactivity for cleaner view
             let t;
             const idleClass = "idle";
             const resetIdle = () => {
