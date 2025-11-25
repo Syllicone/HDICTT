@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Book Viewer</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+            background-color: #000000
+        }
+        img {
+            max-width: 90vw;
+            max-height: 85vh;
+        }
+        .controls {
+            margin-top: 20px;
+            display: none;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+<img id="pageImage" src="" alt="Page">
+
+<div class="controls">
+    <button onclick="prevPage()">Previous</button>
+    <button onclick="nextPage()">Next</button>
+</div>
+
+<script>
+    // List of image filenames
+    const pages = [
+        "Assets/page_00.jpg",
+        "Assets/page_01.jpg",
+        "Assets/page_02.jpg",
+        "Assets/page_03.jpg",
+        "Assets/page_04.jpg",
+        "Assets/page_05.jpg",
+        "Assets/page_06.jpg",
+        "Assets/page_07.jpg",
+        "Assets/page_08.jpg",
+        "Assets/page_09.jpg",
+        "Assets/page_10.jpg"
+    ];
+
+    let current = 0;
+
+    function showPage() {
+        document.getElementById("pageImage").src = pages[current];
+    }
+
+    function prevPage() {
+        if (current > 0) {
+            current--;
+            showPage();
+        }
+    }
+
+    function nextPage() {
+        if (current < pages.length - 1) {
+            current++;
+            showPage();
+        }
+    }
+
+    // Show the first page on load
+    showPage();
+
+    // Handle arrow key presses
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "ArrowLeft") {
+            prevPage();
+        } else if (event.key === "ArrowRight") {
+            nextPage();
+        }
+    });
+</script>
+
+</body>
+</html>
