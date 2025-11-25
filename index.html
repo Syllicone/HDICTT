@@ -2,20 +2,11 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Book Viewer</title>
+    <title>How did it come to this?</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <style>
-        html,body{
-            height:100%;
-            margin:0;
-            background:#000;
-        }
-        body{
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            outline:none;
-        }
+        <style>
+        html,body{height:100%;margin:0;background:#000}
+        body{display:flex;align-items:center;justify-content:center;outline:none}
         img{
             margin:50px;
             box-sizing:border-box;
@@ -24,84 +15,68 @@
             -webkit-user-drag:none;
             user-select:none;
         }
-        body.idle *{ cursor:none; }
+        body.idle *{cursor:none}
+
+        /* show pointer when hovering over the image (also overrides hidden cursor) */
+        img:hover,
+        body.idle img:hover { cursor: pointer; }
     </style>
 </head>
 <body tabindex="0">
     <img id="pageImage" src="" alt="Page scan">
-
     <script>
-        const pages = [
-            "Assets/page-00.jpg",
-            "Assets/page-01.jpg",
-            "Assets/page-02.jpg",
-            "Assets/page-03.jpg",
-            "Assets/page-04.jpg",
-            "Assets/page-05.jpg",
-            "Assets/page-06.jpg",
-            "Assets/page-07.jpg",
-            "Assets/page-08.jpg",
-            "Assets/page-09.jpg",
-            "Assets/page-10.jpg"
-        ];
-
+        const PAGE_COUNT = 11; // change if you have more/less pages
+        const pages = Array.from({length: PAGE_COUNT}, (_, i) => `Assets/page-${String(i).padStart(2,'0')}.jpg`);
         let current = 0;
-        const img = document.getElementById("pageImage");
+        const img = document.getElementById('pageImage');
+        const wrap = false; // set true to loop from last->first and first->last
 
-        function showPage() {
-            img.src = pages[current];
-        }
+        const showPage = () => img.src = pages[current];
 
-        function prevPage() {
-            if (current > 0) {
-                current--;
-                showPage();
-            }
-        }
+        const prevPage = () => {
+            if (current > 0) current--;
+            else if (wrap) current = pages.length - 1;
+            showPage();
+        };
 
-        function nextPage() {
-            if (current < pages.length - 1) {
-                current++;
-                showPage();
-            }
-        }
+        const nextPage = () => {
+            if (current < pages.length - 1) current++;
+            else if (wrap) current = 0;
+            showPage();
+        };
 
-        document.body.addEventListener("keydown", (e) => {
-            if (e.key === "ArrowLeft") {
-                prevPage();
-            } else if (e.key === "ArrowRight") {
-                nextPage();
-            }
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') { e.preventDefault(); prevPage(); }
+            else if (e.key === 'ArrowRight') { e.preventDefault(); nextPage(); }
         });
 
-        function handlePointerNavigation(clientX) {
+        const handlePointerNavigation = (clientX) => {
             const half = window.innerWidth / 2;
-            if (clientX < half) prevPage();
-            else nextPage();
-        }
+            clientX < half ? prevPage() : nextPage();
+        };
 
-        document.addEventListener("click", (e) => {
+        window.addEventListener('click', (e) => {
             if (e.button !== 0) return;
             handlePointerNavigation(e.clientX);
         });
 
-        document.addEventListener("touchend", (e) => {
-            const t = e.changedTouches[0];
-            if (!t) return;
-            handlePointerNavigation(t.clientX);
+        window.addEventListener('touchend', (e) => {
+            const t = e.changedTouches?.[0];
+            if (t) handlePointerNavigation(t.clientX);
         }, {passive:true});
 
-        window.addEventListener("load", () => {
+        window.addEventListener('load', () => {
             showPage();
-            document.body.focus();
+            window.focus();
+            // optional: hide cursor after inactivity
             let t;
-            const idleClass = "idle";
+            const idleClass = 'idle';
             const resetIdle = () => {
                 document.body.classList.remove(idleClass);
                 clearTimeout(t);
                 t = setTimeout(() => document.body.classList.add(idleClass), 1500);
             };
-            document.addEventListener("mousemove", resetIdle, {passive:true});
+            document.addEventListener('mousemove', resetIdle, {passive:true});
             resetIdle();
         });
     </script>
