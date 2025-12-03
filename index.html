@@ -26,7 +26,7 @@
     <img id="pageImage" src="" alt="Page scan">
     <script>
         const PAGE_COUNT = 22; // change if you have more/less pages
-        const pages = Array.from({length: PAGE_COUNT}, (_, i) => `Good-Scans/page-${String(i).padStart(2,'0')}.jpg`);
+        const pages = Array.from({length: PAGE_COUNT}, (_, i) => `Assets/page-${String(i).padStart(2,'0')}.jpg`);
         let current = 0;
         const img = document.getElementById('pageImage');
         const wrap = false; // set true to loop from last->first and first->last
